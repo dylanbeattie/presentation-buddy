@@ -109,7 +109,8 @@
     "watch": "tsc -watch -p ./",
     "test": "vscode-test",
     "vsce:minor": "vsce publish minor",
-    "vsce:patch": "vsce publish patch"
+    "vsce:patch": "vsce publish patch",
+    "install": "vsce package -o presentation-buddy.preview.vsix && code --install-extension presentation-buddy.preview.vsix"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
