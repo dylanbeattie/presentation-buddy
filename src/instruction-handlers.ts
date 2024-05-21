@@ -19,7 +19,7 @@ import {
   Wait,
   TypeTextFromFile,
   TypeChunksFromFile,
-  IHaveAFilePath
+  IReadFromAFile
 } from './instructions';
 import {
   mkdirIfNotExists,
@@ -37,14 +37,12 @@ import {
 import { setAwaiter } from './wait-for-input';
 
 const readFileContents = async (
-  instruction: IHaveAFilePath
+  instruction: IReadFromAFile
 ) : Promise<string> => {
   if (!workspace.workspaceFolders) {
     return "";
   }
-  const workspaceFolder = workspace.workspaceFolders[0].uri.fsPath;
-  const path = join(workspaceFolder, '.presentation-buddy', instruction.path);
-  return await readFileAsync(path);
+  return await readFileAsync(instruction.qualifiedPath);
 };
 
 export const typeTextFromFile = async (
@@ -163,7 +161,7 @@ export const createFile = async (instruction: CreateFile): Promise<void> => {
 
   await mkdirIfNotExists(dirname(path));
   await writeFileAsync(path);
-  const uri = Uri.file(join(workspaceFolder, instruction.path));
+  const uri = Uri.file(path);
   await commands.executeCommand('vscode.open', uri);
   await timeout(getDelay());
 };

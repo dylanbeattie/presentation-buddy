@@ -1,8 +1,8 @@
 import { window, workspace } from 'vscode';
-import { join } from 'path';
+import { join, dirname, sep as pathSeparator } from 'path';
 import { jsonc } from 'jsonc';
 
-import { Instruction, InstructionHandler } from './instructions';
+import { Instruction, InstructionHandler, IReadFromAFile } from './instructions';
 import * as instructionHandlers from './instruction-handlers';
 import { existsAsync, mkdirIfNotExists } from './utils';
 
@@ -56,15 +56,39 @@ export const start = async () => {
   console.log(instructions);
 };
 
-async function loadInstructions(
-  workspaceFolder: string
-): Promise<Instruction[]> {
-  const path = join(
-    workspaceFolder,
-    '.presentation-buddy',
-    'instructions.json'
-  );
-  const instructions: Instruction[] = await jsonc.read(path);
+function getPossibleInstructionPaths(workspaceFolder: string) {
+  var segments = workspaceFolder.split(pathSeparator);
+  const possibleInstructionFilePaths = new Array();
+  for (var i = segments.length; i > 0; i--) {
+    const pathBits = segments.slice(0, i).concat(['.presentation-buddy', ...segments.slice(i), 'instructions.json']);
+    possibleInstructionFilePaths.push(join(...pathBits));
+  }
+  return possibleInstructionFilePaths;
+}
 
-  return instructions.filter((instruction) => !instruction.skip);
+const fileReaderInstructionTypes = ["typeTextFromFile", "typeChunksFromFile"];
+function readsFromFile(inst: Instruction) : inst is Instruction & IReadFromAFile {
+  return fileReaderInstructionTypes.includes(inst.type);
+}
+
+async function loadInstructions(workspaceFolder: string): Promise<Instruction[]> {
+  const filePaths = getPossibleInstructionPaths(workspaceFolder);
+  for (var filePath of filePaths) {
+    if (await existsAsync(filePath)) {
+      let dir = dirname(filePath);
+      let instructions: Instruction[] = await jsonc.read(filePath);
+      instructions = instructions.filter((instruction) => !instruction.skip);
+      for (var instruction of instructions.filter(readsFromFile)) {
+        instruction.qualifiedPath = join(dir, instruction.path);
+      }
+      return instructions;
+    }
+  }
+  window.showErrorMessage(`Couldn't start Presentation Buddy - no instructions.json found.
+
+Searched:
+
+• ${filePaths.join('\n• ')}
+`, { modal: true });
+  return [];
 }

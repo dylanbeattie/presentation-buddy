@@ -1,7 +1,8 @@
 type Skipable = { skip?: boolean };
 
-export interface IHaveAFilePath {
+export interface IReadFromAFile {
   path: string;
+  qualifiedPath: string
 }
 
 export type Command = {
@@ -18,12 +19,14 @@ export type TypeText = { type: "typeText"; text: string[]; delay?: number };
 export type TypeTextFromFile = {
   type: "typeTextFromFile";
   path: string;
+  qualifiedPath: string;
   delay?: number;
 };
 
 export type TypeChunksFromFile = {
   type: "typeChunksFromFile";
   path: string;
+  qualifiedPath: string;
   delay?: number;
   waitInsteadOfTyping: string[];
   waitAfterTyping: string[];

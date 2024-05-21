@@ -1,35 +1,22 @@
-import { workspace, window, Uri } from 'vscode';
-import { join, posix } from 'path';
+/*eslint curly: ["error", "multi-line"]*/
+
+import { workspace, Uri } from 'vscode';
+import { join } from 'path';
 import { TextDecoder } from 'util';
-
-const pathToUri = (path: string): Uri => {
-  path = path.replace(/\\/g, posix.sep);
-
-  if (window.activeTextEditor) {
-    const tsUri = window.activeTextEditor.document.uri;
-    if (tsUri) {
-      const jsUri = tsUri.with({ path });
-
-      return jsUri;
-    }
-  }
-  throw new Error('No window.activeTextEditor.document.uri?');
-};
 
 export const existsAsync = async (path: string): Promise<boolean> => {
   try {
-    const uri = pathToUri(path);
-    await workspace.fs.stat(uri);
+    await workspace.fs.stat(Uri.file(path));
     return true;
-  } catch {
-    return false;
+  } catch (err) {
+    console.debug(err);
   }
+  return false;
 };
 
 const mkdirAsync = async (path: string): Promise<void> => {
-  const uri = pathToUri(path);
   try {
-    await workspace.fs.createDirectory(uri);
+    await workspace.fs.createDirectory(Uri.file(path));
   } catch (err) {
     console.log(err);
   }
@@ -128,17 +115,15 @@ export const writeFileAsync = async (
   path: string,
   data: string = ''
 ): Promise<void> => {
-  const uri = pathToUri(path);
   const content = Buffer.from(data, 'utf8');
-  await workspace.fs.writeFile(uri, content);
+  await workspace.fs.writeFile(Uri.file(path), content);
 };
 
 export const readFileAsync = async (
   path: string,
   encoding: string = 'utf8'
 ): Promise<string> => {
-  const uri = pathToUri(path);
-  const content = await workspace.fs.readFile(uri);
+  const content = await workspace.fs.readFile(Uri.file(path));
   const data = new TextDecoder(encoding).decode(content);
   return data;
 };
@@ -163,7 +148,7 @@ export function getRandomness() {
   return pause || 0;
 }
 
-export function getWaitAfterNewLine() : boolean {
+export function getWaitAfterNewLine(): boolean {
   const waitAfterNewLine = workspace.getConfiguration().get<boolean>('presentation-buddy.waitAfterNewLine');
   return waitAfterNewLine ?? true;
 }
