@@ -4,6 +4,10 @@ export interface IHaveAFilePath {
   path: string;
 }
 
+export interface IReadFromAFile {
+  qualifiedPath: string;
+}
+
 export type Command = {
   type: "command";
   command: string;
@@ -18,12 +22,14 @@ export type TypeText = { type: "typeText"; text: string[]; delay?: number };
 export type TypeTextFromFile = {
   type: "typeTextFromFile";
   path: string;
+  qualifiedPath: string;
   delay?: number;
 };
 
 export type TypeChunksFromFile = {
   type: "typeChunksFromFile";
   path: string;
+  qualifiedPath: string;
   delay?: number;
   waitInsteadOfTyping: string[];
   waitAfterTyping: string[];

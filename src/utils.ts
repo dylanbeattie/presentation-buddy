@@ -17,21 +17,24 @@ const pathToUri = (path: string): Uri => {
 };
 
 export const existsAsync = async (path: string): Promise<boolean> => {
-  try {
-    const uri = pathToUri(path);
-    await workspace.fs.stat(uri);
-    return true;
-  } catch {
-    return false;
-  }
+  for (var uri of [Uri.file(path), pathToUri(path)]) {
+    try {
+      await workspace.fs.stat(uri);
+      return true;
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  return false;
 };
 
 const mkdirAsync = async (path: string): Promise<void> => {
-  const uri = pathToUri(path);
-  try {
-    await workspace.fs.createDirectory(uri);
-  } catch (err) {
-    console.log(err);
+  for (var uri of [Uri.file(path), pathToUri(path)]) {
+    try {
+      await workspace.fs.createDirectory(uri);
+    } catch (err) {
+      console.error(err);
+    }
   }
 };
 
@@ -128,7 +131,7 @@ export const writeFileAsync = async (
   path: string,
   data: string = ''
 ): Promise<void> => {
-  const uri = pathToUri(path);
+  const uri = Uri.file(path);
   const content = Buffer.from(data, 'utf8');
   await workspace.fs.writeFile(uri, content);
 };
@@ -137,7 +140,7 @@ export const readFileAsync = async (
   path: string,
   encoding: string = 'utf8'
 ): Promise<string> => {
-  const uri = pathToUri(path);
+  const uri = Uri.file(path);
   const content = await workspace.fs.readFile(uri);
   const data = new TextDecoder(encoding).decode(content);
   return data;
@@ -163,7 +166,7 @@ export function getRandomness() {
   return pause || 0;
 }
 
-export function getWaitAfterNewLine() : boolean {
+export function getWaitAfterNewLine(): boolean {
   const waitAfterNewLine = workspace.getConfiguration().get<boolean>('presentation-buddy.waitAfterNewLine');
   return waitAfterNewLine ?? true;
 }

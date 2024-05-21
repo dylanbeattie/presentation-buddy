@@ -20,6 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('Presentation Buddy: Init');
       } catch (e) {
         vscode.window.showErrorMessage((e as Error).message);
+        console.error(e);
       }
     })
   );
@@ -30,6 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
         await start();
       } catch (e) {
         vscode.window.showErrorMessage((e as Error).message);
+        console.error(e);
       }
     })
   );
