@@ -30,6 +30,7 @@ import {
   getRandomness,
   splitTextIntoChunks,
   getWaitAfterTyping,
+  getWaitBeforeTyping,
   getWaitInsteadOfTyping,
   getSkipLinesContaining,
   getWaitAfterNewLine
@@ -65,12 +66,13 @@ export const typeChunksFromFile = async (
 
   const waitInsteadOf = instruction.waitInsteadOfTyping || getWaitInsteadOfTyping();
   const waitAfter = instruction.waitAfterTyping ||  getWaitAfterTyping();
+  const waitBefore = instruction.waitBeforeTyping ||  getWaitBeforeTyping();
   const skipLinesContaining = instruction.skipLinesContaining ||  getSkipLinesContaining();
   const waitAfterNewLine = instruction.waitAfterNewLine ?? getWaitAfterNewLine() ?? true;
 
   if (waitAfterNewLine) { waitAfter.push('\n'); }
 
-  var chunks = splitTextIntoChunks(text, waitInsteadOf, waitAfter, skipLinesContaining);
+  var chunks = splitTextIntoChunks(text, waitInsteadOf, waitBefore, waitAfter, skipLinesContaining);
   for (const chunk of chunks) {
     await typeTextIntoActiveTextEditor(Array.from(chunk), instruction.delay);
     if (chunk.endsWith('\n')) {

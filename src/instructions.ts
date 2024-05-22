@@ -29,7 +29,8 @@ export type TypeChunksFromFile = {
   qualifiedPath: string;
   delay?: number;
   waitInsteadOfTyping: string[];
-  waitAfterTyping: string[];
+  waitAfterTyping: string[],
+  waitBeforeTyping: string[];
   waitAfterNewLine: boolean | null,
   skipLinesContaining: string[];
 };

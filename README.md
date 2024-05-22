@@ -27,6 +27,7 @@ This extension contributes the following settings:
 - `presentation-buddy.randomness`: Randomness (in ms) between keys entered. Defaults to 25ms.
 - `presentation-buddy.waitInsteadOfTyping`: Default array of strings which indicate a pause when typing chunks from a file. 
 - `presentation-buddy.waitAfterTyping`: Default array of strings which indicate a pause when typing chunks from a file.
+- `presentation-buddy.waitBeforeTyping`: Default array of strings which indicate a pause when typing chunks from a file.
 - `presentation-buddy.skipLinesContaining`: Default array of strings indicating lines to skip when typing chunks from a file.
 - `presentation-buddy.waitAfterNewLine`: controls whether to pause after each new line when typing chunks from a file.
 
@@ -77,7 +78,7 @@ Windows-style `\r\n` line endings will be converted to `\n` before the file is p
 
 Presentation Buddy will:
 
-* `wait` after typing any string matching a supplied `waitAfter` argument
+* `wait` before typing any string matching a supplied `waitBefore` argument
 * `wait` **instead of** typing any string matching a supplied `waitInsteadOf` argument
 * Skip any line containing any string matching a supplied `skipLinesContaining` argument.
 
@@ -91,7 +92,7 @@ Any line containing the comment `//skip` will be skipped. Presentation Buddy wil
 {
   "type":"typeChunksFromFile",
   "path": "chunks-example.js",
-  "waitAfterTyping": [ "{", ".", " => ", " = " ],
+  "waitBeforeTyping": [ "{", ".", " => ", " = " ],
   "waitInsteadOfTyping": [ "/*WAIT*/" ],
   "skipLinesContaining": [ "//skip" ]
 }

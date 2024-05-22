@@ -77,14 +77,25 @@
           "description": "When using typeChunksFromFile, controls whether Presentation Buddy should pause at the start of each new line.",
           "scope": "user"
         },
-        "presentation-buddy.waitAfterTyping": {
+        "presentation-buddy.waitBeforeTyping": {
           "type": "array",
           "items": {
             "type": "string"
           },
           "default": [
             "(",
-            "="
+            " ="
+          ],
+          "description": "When using typeChunksFromFile, Presentation Buddy will pause before typing any series of matching strings.",
+          "scope": "user"
+        },
+        "presentation-buddy.waitAfterTyping": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+
           ],
           "description": "When using typeChunksFromFile, Presentation Buddy will pause after typing any series of matching strings.",
           "scope": "user"

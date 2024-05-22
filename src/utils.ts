@@ -25,6 +25,24 @@ const mkdirAsync = async (path: string): Promise<void> => {
 /** Split a string after each instance of the supplied separator,
  * and include the the separator in the resulting tokens.
  * @example
+ * // returns ['b','an','an', 'a']
+ * splitAfterToken('banana', 'a')
+ */
+export function* splitBeforeToken(text: string, separator: string) {
+  let i = 1;
+  while (i++ < text.length) {
+    if (text[i] === separator) {
+      yield text.substring(0,i);
+      text = text.substring(i);
+      i = 0;
+    }
+  }
+  if (text) { yield text; };
+}
+
+/** Split a string after each instance of the supplied separator,
+ * and include the the separator in the resulting tokens.
+ * @example
  * // returns ['ba','na','na']
  * splitAfterToken('banana', 'a')
  */
@@ -73,7 +91,8 @@ export function* gatherSeparators(elements: string[], separators: string[]) {
 export function splitTextIntoChunks(
   text: string,
   separatorsToConsume: string[] = [],
-  separatorsToInclude: string[] = [],
+  leadingSeparatorsToInclude: string[] = [],
+  trailingSeparatorsToInclude: string[] = [],
   skipTokens: string[] = []
 ): string[] {
 
@@ -86,14 +105,19 @@ export function splitTextIntoChunks(
     result = result.map(r => r.split(separator)).flat();
   }
 
-  for (var separator of separatorsToInclude) {
+  for (var separator of leadingSeparatorsToInclude) {
+    result = result.map(r => [...splitBeforeToken(r, separator)]).flat();
+  }
+
+  for (var separator of trailingSeparatorsToInclude) {
     result = result.map(r => [...splitAfterToken(r, separator)]).flat();
   }
 
   let keep = (s: string) => (s !== "" && (!skipTokens.some(t => s.includes(t))));
 
   result = result.filter(t => keep(t));
-  result = [...gatherSeparators(result, separatorsToInclude)];
+  let separators = leadingSeparatorsToInclude.concat(trailingSeparatorsToInclude);
+  result = [...gatherSeparators(result, separators)];
   return result;
 }
 
@@ -162,4 +186,5 @@ function getConfigValues(key: string) {
 
 export const getWaitInsteadOfTyping = () => getConfigValues('waitInsteadOfTyping');
 export const getWaitAfterTyping = () => getConfigValues('waitAfterTyping');
+export const getWaitBeforeTyping = () => getConfigValues('waitBeforeTyping');
 export const getSkipLinesContaining = () => getConfigValues('skipLinesContaining');
